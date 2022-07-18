@@ -20,7 +20,32 @@ services:
       GRID_TIMEOUT: 60000
 
   chrome:
-    image: selenium/node-chrome:3.141.59-20210929
+    image: selenium/node-chrome:103.0-20220706
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./src:/tmp/src/
+    depends_on:
+      - selenium-hub
+    deploy:
+      mode: replicated
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '1'
+          memory: '2gb'
+        reservations:
+          cpus: '1'
+    environment:
+      HUB_HOST: 'selenium-hub'
+      HUB_PORT: 4444
+      NODE_MAX_SESSION: 5
+      NODE_MAX_INSTANCES: 5
+      TZ: "Asia/Calcutta"
+
+  firefox:
+    image: selenium/node-firefox:102.0-20220706
     volumes:
       - /dev/shm:/dev/shm
       - ./src:/tmp/src/
